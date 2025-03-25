@@ -1,27 +1,17 @@
-FROM php:8.3-apache
-
-USER root
+FROM php:8.2-fpm
 
 RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    libzip-dev \
-    libicu-dev \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    libicu-dev zip unzip git curl libpng-dev libjpeg-dev libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install intl pdo pdo_mysql gd \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer --version
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-RUN a2enmod rewrite
+WORKDIR /var/www
 
-EXPOSE 80
+RUN chown -R www-data:www-data /var/www/tmp /var/www/logs
 
-USER www-data
+EXPOSE 9000
 
-CMD ["apache2-foreground"]
+CMD ["php-fpm"]
