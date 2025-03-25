@@ -23,10 +23,6 @@ RUN set -eux; \
             libzip-dev; \
     rm -rf /var/lib/apt/lists/*
 
-RUN pecl install imagick && docker-php-ext-enable imagick
-RUN pecl install mongodb && docker-php-ext-enable mongodb
-RUN pecl install apcu && docker-php-ext-enable apcu
-
 RUN set -eux; \
     docker-php-ext-install pdo pdo_mysql mysqli zip; \
     docker-php-ext-configure gd \
