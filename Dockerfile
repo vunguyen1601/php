@@ -1,4 +1,4 @@
-FROM php:8.4-apache-bullseye
+FROM php:8.2-apache-bullseye
 
 ENV DEBIAN_FRONTEND=noninteractive
 USER root
@@ -18,27 +18,14 @@ RUN set -eux; \
             imagemagick \
             libmagickwand-dev \
             libonig-dev \
-            libzip-dev; \
+            libzip-dev \
+            libicu-dev; \
     rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y \
-    libicu-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install intl pdo pdo_mysql gd zip \
-    && pecl install imagick && docker-php-ext-enable imagick \
-    && rm -rf /var/lib/apt/lists/*
-
-# RUN pecl install mongodb && docker-php-ext-enable mongodb
-RUN pecl install apcu && docker-php-ext-enable apcu
-
-RUN set -eux; \
-    docker-php-ext-install pdo pdo_mysql mysqli zip; \
-    docker-php-ext-configure gd \
-            --with-freetype \
-            --with-jpeg; \
-    docker-php-ext-install gd iconv mbstring; \
-    docker-php-ext-enable gd; \
-    php -r 'var_dump(gd_info());'
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install intl pdo pdo_mysql gd zip iconv mbstring \
+    && pecl install imagick apcu \
+    && docker-php-ext-enable imagick apcu
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
