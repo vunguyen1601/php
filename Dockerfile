@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.4-apache-bullseye
 
 ENV DEBIAN_FRONTEND=noninteractive
 USER root
